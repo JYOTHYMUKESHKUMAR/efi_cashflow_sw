@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    /* CSS for blue borders and headings */
+    .blue-border {
+        border: 2px solid blue;
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+
+    .blue-heading {
+        color: #FFA500;
+        font-weight: bold;
+    }
+</style>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card blue-border">
+            <div class="card-body">
+                <form method="post" action="{% url 'add_cashin' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="col-12">
+                        <h5 class="form-title blue-heading"><span>Add CashIn</span></h5>
+                    </div>
+
+                    {% include 'messages.html' %}
+                    <br>
+                    <div id="ajax-messages"></div>
+                    <div class="col-sm-11">
+                        <label class="blue-heading">Income Source</label>
+                        <div class="input-group">
+                            <select class="form-control" name="income_source_id" required>
+                                <option>Select Income Source</option>
+                                {% for i in income_source %}
+                                <option value="{{i.id}}">{{i.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#incomeSourceModal">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label class="blue-heading">Date</label>
+                            <input type="date" class="form-control" name="date" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label class="blue-heading">Cash In</label>
+                            <input type="number" class="form-control" name="cash_in" required>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label class="blue-heading">Status</label>
+                            <select class="form-control" name="status" id="id_status" onchange="toggleInstallmentFields()" required>
+                                <option value="Received">Received</option>
+                                <option value="Scheduled">Scheduled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label class="blue-heading">Remark</label>
+                            <textarea class="form-control" name="remark" required></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-11">
+                        <label class="blue-heading">Project</label>
+                        <div class="input-group">
+                            <select class="form-control" name="project_id" required>
+                                <option>Select Project</option>
+                                {% for i in project %}
+                                <option value="{{i.id}}">{{i.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#projectModal">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label class="blue-heading">Cost Center</label>
+                            <select class="form-control" name="cost_center" required>
+                                <option value="catalyst">Catalyst</option>
+                                <option value="oil_and_gas">Oil and Gas</option>
+                                <option value="general_chemicals">General Chemicals</option>
+                                <option value="overhead">Overhead</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label class="blue-heading">Service Date</label>
+                            <input type="date" class="form-control" name="service_date">
+                        </div>
+                    </div>
+
+                    <br>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Add CashIn</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Income Source Modal -->
+<div class="modal fade" id="incomeSourceModal" tabindex="-1" role="dialog" aria-labelledby="incomeSourceModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="incomeSourceModalLabel">Add Income Source</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label for="new_income_source">Name:</label>
+                <input type="text" id="new_income_source" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-income-source">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Project Modal -->
+<div class="modal fade" id="projectModal" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="projectModalLabel">Add Project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label for="new_project">Name:</label>
+                <input type="text" id="new_project" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-project">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showMessage(message, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `alert alert-${type}`;
+        messageDiv.innerText = message;
+        document.getElementById('ajax-messages').appendChild(messageDiv);
+        setTimeout(() => {
+            messageDiv.remove();
+        }, 5000);
+    }
+
+    document.getElementById('save-income-source').onclick = function() {
+        const name = document.getElementById('new_income_source').value;
+        fetch('/add_income_source/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ name: name })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.id) {
+                const select = document.querySelector('select[name="income_source_id"]');
+                const option = document.createElement('option');
+                option.value = data.id;
+                option.textContent = data.name;
+                select.appendChild(option);
+                select.value = data.id;
+                $('#incomeSourceModal').modal('hide');
+                showMessage('Income Source added successfully', 'success');
+            } else {
+                showMessage('Failed to add Income Source', 'danger');
+            }
+        });
+    };
+
+    document.getElementById('save-project').onclick = function() {
+        const name = document.getElementById('new_project').value;
+        fetch('/add_project/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ name: name })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.id) {
+                const select = document.querySelector('select[name="project_id"]');
+                const option = document.createElement('option');
+                option.value = data.id;
+                option.textContent = data.name;
+                select.appendChild(option);
+                select.value = data.id;
+                $('#projectModal').modal('hide');
+                showMessage('Project added successfully', 'success');
+            } else {
+                showMessage('Failed to add Project', 'danger');
+            }
+        });
+    };
+</script>
+
+{% endblock %}

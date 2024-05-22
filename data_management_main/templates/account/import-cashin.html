@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Import Cash In Records</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'view_cashin' %}">Cash In</a></li>
+                    <li class="breadcrumb-item active">Import Cash In</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% include 'messages.html' %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Choose a file to import</h5>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <input type="file" name="csv_file" accept=".csv,.xlsx,.xls" class="form-control-file">
+                        </div>
+                        <small class="text-danger">Please upload a CSV, Excel (.xlsx, .xls) file with the following order: ID, Date, Income Source, Cash In, Status, Project, Cost Center, Service Date</small>
+                        <button type="submit" class="btn btn-primary mt-3">Import</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    {% if imported_data %}
+    <div class="row">
+        <div class="col">
+            <h5>Imported Data (Preview)</h5>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Income Source</th>
+                        <th>Cash In</th>
+                        <th>Status</th>
+                        <th>Project</th>
+                        <th>Cost Center</th>
+                        <th>Service Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in imported_data %}
+                    <tr>
+                        <td>{{ record.id }}</td>
+                        <td>{{ record.date }}</td>
+                        <td>{{ record.income_source }}</td>
+                        <td>{{ record.cash_in }}</td>
+                        <td>{{ record.status }}</td>
+                        <td>{{ record.project }}</td>
+                        <td>{{ record.cost_center }}</td>
+                        <td>{{ record.service_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button class="btn btn-primary">Confirm Import</button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

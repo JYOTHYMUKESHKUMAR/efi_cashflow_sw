@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-header">
+   <div class="row">
+      <div class="col-sm-12">
+         <h3 class="page-title">Welcome Admin!</h3>
+         <ul class="breadcrumb">
+            <li class="breadcrumb-item active">Dashboard</li>
+         </ul>
+      </div>
+   </div>
+</div>
+<div class="row">
+   <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="card bg-one w-100">
+         <div class="card-body">
+            <div class="db-widgets d-flex justify-content-between align-items-center">
+               <div class="db-icon">
+                  <i class="fas fa-file-invoice-dollar"></i>
+               </div>
+               <div class="db-info">
+                  <h3>{{ total_cash_in|floatformat:2 }}</h3>
+                  <h6>Total Cash In</h6>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="card bg-two w-100">
+         <div class="card-body">
+            <div class="db-widgets d-flex justify-content-between align-items-center">
+               <div class="db-icon">
+                  <i class="fas fa-file-invoice-dollar"></i>
+               </div>
+               <div class="db-info">
+                  <h3>{{ total_cash_out|floatformat:2 }}</h3>
+                  <h6>Total Cash Out</h6>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="card bg-three w-100">
+         <div class="card-body">
+            <div class="db-widgets d-flex justify-content-between align-items-center">
+               <div class="db-icon">
+                  <i class="fas fa-balance-scale"></i>
+               </div>
+               <div class="db-info">
+                  <h3>{{ balance|floatformat:2 }}</h3>
+                  <h6>Balance</h6>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="card bg-four w-100">
+         <div class="card-body">
+            <div class="db-widgets d-flex justify-content-between align-items-center">
+               <div class="db-icon">
+                  <i class="fas fa-university"></i>
+               </div>
+               <div class="db-info">
+                  <h3>{{ bank_balance|floatformat:2 }}</h3>
+                  <h6>Bank Balance</h6>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+
+<div class="row">
+   <div class="col-md-12 col-lg-6">
+      <div class="card card-chart">
+         <div class="card-header">
+            <div class="row align-items-center">
+               <div class="col-6">
+                  <h5 class="card-title">Revenue</h5>
+               </div>
+               <div class="col-6">
+                  <ul class="list-inline-group text-right mb-0 pl-0">
+                     <li class="list-inline-item">
+                        <div class="form-group mb-0 amount-spent-select">
+                           <select class="form-control form-control-sm">
+                              <option>Today</option>
+                              <option>Last Week</option>
+                              <option>Last Month</option>
+                           </select>
+                        </div>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+         <div class="card-body">
+            <div id="apexcharts-area"></div>
+         </div>
+      </div>
+   </div>
+   <div class="col-md-12 col-lg-6">
+      <div class="card card-chart">
+         <div class="card-header">
+            <div class="row align-items-center">
+               <div class="col-6">
+                  <h5 class="card-title">CashFlow</h5>
+               </div>
+               <div class="col-6">
+                  <ul class="list-inline-group text-right mb-0 pl-0">
+                     <li class="list-inline-item">
+                        <div class="form-group mb-0 amount-spent-select">
+                           <select class="form-control form-control-sm">
+                              <option>Today</option>
+                              <option>Last Week</option>
+                              <option>Last Month</option>
+                           </select>
+                        </div>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+         <div class="card-body">
+            <div id="bar"></div>
+         </div>
+      </div>
+   </div>
+</div>
+<div class="row">
+   <div class="col-md-6 d-flex">
+      <div class="card flex-fill">
+         <div class="card-header">
+            <h5 class="card-title">Star Customer</h5>
+         </div>
+         <div class="card-body">
+            <div class="table-responsive">
+               <table class="table table-hover table-center">
+                  <thead class="thead-light">
+                     <tr>
+                        <th>Date</th>
+                        <th>Income Source</th>
+                        <th class="text-center">Cash In</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     
+                     <tr>
+                        <td class="text-nowrap">11/7/2023</td>
+                        <td class="text-nowrap">QE CATALYST</td>
+                        <td class="text-center">1528775.26</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">11/16/2023</td>
+                        <td class="text-nowrap">QE CATALYST</td>
+                        <td class="text-center">2580512.26</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">11/27/2023</td>
+                        <td class="text-nowrap">QE CATALYST</td>
+                        <td class="text-center">1483541.36</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">1/17/2024</td>
+                        <td class="text-nowrap">RGPC</td>
+                        <td class="text-center">430848</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">1/22/2024</td>
+                        <td class="text-nowrap">QE CATALYST</td>
+                        <td class="text-center">1464157.05</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">2/1/2024</td>
+                        <td class="text-nowrap">WOLGAN</td>
+                        <td class="text-center">125000</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">3/14/2024</td>
+                        <td class="text-nowrap">RGPC</td>
+                        <td class="text-center">134640</td>
+                     </tr>
+                     
+                     <tr>
+                        <td class="text-nowrap">6/15/2024</td>
+                        <td class="text-nowrap">RGPC</td>
+                        <td class="text-center">161000</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">7/15/2024</td>
+                        <td class="text-nowrap">RGPC</td>
+                        <td class="text-center">161000</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">8/12/2024</td>
+                        <td class="text-nowrap">QE CATALYST</td>
+                        <td class="text-center">1496120.4</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="col-md-6 d-flex">
+      <div class="card flex-fill">
+         <div class="card-header">
+            <h5 class="card-title">Star Supplier</h5>
+         </div>
+         <div class="card-body">
+            <div class="table-responsive">
+               <table class="table table-hover table-center">
+                  <thead class="thead-light">
+                     <tr>
+                        <th>Date</th>
+                        <th>Expense Source</th>
+                        <th class="text-center">Cash Out</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr>
+                        <td class="text-nowrap">2023-10-01</td>
+                        <td class="text-nowrap">BASF</td>
+                        <td class="text-center">805748.51</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">2023-11-09</td>
+                        <td class="text-nowrap">QDB</td>
+                        <td class="text-center">672508.51</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">2023-11-20</td>
+                        <td class="text-nowrap">QDB</td>
+                        <td class="text-center">450272.48</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">2023-11-22</td>
+                        <td class="text-nowrap">BASF</td>
+                        <td class="text-center">317790.41</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">2023-11-29</td>
+                        <td class="text-nowrap">QDB</td>
+                        <td class="text-center">450272.48</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">2023-11-29</td>
+                        <td class="text-nowrap">QDB</td>
+                        <td class="text-center">760000.00</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">2023-11-30</td>
+                        <td class="text-nowrap">BASF</td>
+                        <td class="text-center">414135.60</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">2023-12-21</td>
+                        <td class="text-nowrap">BASF</td>
+                        <td class="text-center">360990.72</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">2024-01-28</td>
+                        <td class="text-nowrap">QDB</td>
+                        <td class="text-center">863000.00</td>
+                     </tr>
+                     <tr>
+                        <td class="text-nowrap">2024-01-29</td>
+                        <td class="text-nowrap">BASF</td>
+                        <td class="text-center">371302.60</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+   
+<div class="row">
+   <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card flex-fill fb sm-box">
+         <i class="fab fa-facebook"></i>
+         <h6>50,095</h6>
+         <p>Likes</p>
+      </div>
+   </div>
+   <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card flex-fill twitter sm-box">
+         <i class="fab fa-twitter"></i>
+         <h6>48,596</h6>
+         <p>Follows</p>
+      </div>
+   </div>
+   <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card flex-fill insta sm-box">
+         <i class="fab fa-instagram"></i>
+         <h6>52,085</h6>
+         <p>Follows</p>
+      </div>
+   </div>
+   <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card flex-fill linkedin sm-box">
+         <i class="fab fa-linkedin-in"></i>
+         <h6>69,050</h6>
+         <p>Follows</p>
+      </div>
+   </div>
+</div>
+</div>
+
+   
+{% endblock %}

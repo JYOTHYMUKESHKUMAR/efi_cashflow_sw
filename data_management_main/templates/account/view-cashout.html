@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<script>
+   $(document).ready( function () {
+   $('#table_id').DataTable();
+   } );
+</script>
+
+<div class="content container-fluid">
+   <div class="page-header">
+      <div class="row align-items-center">
+         <div class="col">
+            <div class="card-header text-center" style="background-color: #2F4F4F; color: white;">
+               <h3>Cash Out Records</h3>
+           </div>
+            {% comment %} <ul class="breadcrumb">
+               <li class="breadcrumb-item"><a href="">Dashboard</a></li>
+               <li class="breadcrumb-item active">Cash Out</li>
+            </ul> {% endcomment %}
+         </div>
+         <div class="col-auto text-right float-right ml-auto">
+            <a href="{% url 'update_summary_cashout' %}" class="btn btn-primary">Update Summary</a>
+
+            <a href="{% url 'add_cashout' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Cash Out</a>
+            <a href="{% url 'import_cashout' %}" class="btn btn-success"><i class="fas fa-upload"></i> Import Cash Out</a>
+            <a href="{% url 'export_cashout' %}" class="btn btn-info"><i class="fas fa-download"></i> Export Cash Out</a>
+            
+            <!-- You can add import and export buttons if needed -->
+         </div>
+      </div>
+   </div>
+   {% include 'messages.html' %}
+   <div class="row">
+      <div class="col-sm-12">
+         <div class="card card-table">
+            <div class="card-body">
+               <div class="table-responsive">
+                  <table id="table_id" class="table table-hover table-center mb-0">
+                     <thead>
+                        <tr style="background-color: #FFA07A;">
+                           <th>ID</th>
+                           <th>Date</th>
+                           <th>Expense Source</th>
+                           <th>Cash Out</th>
+                           <th>Status</th>
+                           <th>Project</th>
+                           <th>Cost Center</th>
+                           <th>Service Date</th>
+                           <th>Remark</th> 
+                           <th>Total Installment Amount</th>
+                           <th>Balance to Pay</th>
+                           <th>Installment Details</th>
+                           <th class="text-right">Action</th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        {% for cashout in cashouts %}
+                        <tr>
+                           <td>{{ cashout.id }}</td>
+                           <td>{{ cashout.date }}</td>
+                           <td>{{ cashout.expense_source.name }}</td>
+                           <td>{{ cashout.cash_out }}</td>
+                           <td>{{ cashout.status }}</td>
+                           <td>{{ cashout.project.name }}</td>
+                           <td>{{ cashout.cost_center }}</td>
+                           <td>{{ cashout.service_date }}</td>
+                           <td>{{ cashout.remark }}</td>
+                           <td>{{ cashout.total_installment_amount }}</td>
+                           <td>{{ cashout.balance_to_pay }}</td>
+                           <td>
+                               {% if cashout.installment_details %}
+                                   {% for installment in cashout.installment_details %}
+                                       {{ installment.date }}: {{ installment.amount }}<br>
+                                   {% endfor %}
+                               {% endif %}
+                           </td>
+                           <td class="text-right">
+                              <div class="actions">
+                                 <a href="{% url 'edit_cashout' cashout.id %}" class="btn btn-sm bg-info-light mr-2">
+                                     <i class="fas fa-edit"></i> 
+                                 </a>
+                                  <a href= "{% url 'delete_cashout' cashout.id %}" class="btn btn-sm bg-danger-light">
+                                     <i class="fas fa-trash"></i> 
+                                 </a>
+                             </div>
+                           </td>
+                        </tr>
+                        {% endfor %}
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}

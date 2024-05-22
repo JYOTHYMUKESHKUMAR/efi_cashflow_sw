@@ -1,0 +1,122 @@
+<style>
+    .table-container {
+        margin-top: 20px;
+    }
+
+    .table-container table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-container th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    .table-container tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    .action-column {
+        width: 100px;
+    }
+
+    .action-column a {
+        display: inline-block;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: #fff;
+        text-decoration: none;
+        text-align: center;
+        transition: background-color 0.3s;
+    }
+
+    .action-column a:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="table-container">
+    <h3>Cash In Details</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Income Source</th>
+                <th>Cash In</th>
+                <th>Status</th>
+                <th>Remark</th>
+                <th>Project</th>
+                <th>Cost Center</th>
+                <th>Service Date</th>
+                <th class="action-column">Action</th> <!-- Add Action column header -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for cashin_record in cashin_records %}
+            <tr>
+                <td>{{ cashin_record.date }}</td>
+                <td>{{ cashin_record.income_source }}</td>
+                <td>{{ cashin_record.cash_in }}</td>
+                <td>{{ cashin_record.status }}</td>
+                <td>{{ cashin_record.remark }}</td>
+                <td>{{ cashin_record.project }}</td>
+                <td>{{ cashin_record.cost_center }}</td>
+                <td>{{ cashin_record.service_date }}</td>
+                <td>
+                    <a href="{% url 'edit_cashin' cashin_record.pk %}" class="btn btn-primary">Edit</a> <!-- Add Edit button -->
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="table-container">
+    <h3>Cash Out Details</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Expense Source</th>
+                <th>Cash Out</th>
+                <th>Status</th>
+                <th>Remark</th>
+                <th>Project</th>
+                <th>Cost Center</th>
+                <th>Service Date</th>
+                <th>Total Installment Amount</th>
+                <th>Balance to Pay</th>
+                <th class="action-column">Action</th> <!-- Add Action column header -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for cashout_record in cashout_records %}
+            <tr>
+                <td>{{ cashout_record.date }}</td>
+                <td>{{ cashout_record.expense_source }}</td>
+                <td>{{ cashout_record.cash_out }}</td>
+                <td>{{ cashout_record.status }}</td>
+                <td>{{ cashout_record.remark }}</td>
+                <td>{{ cashout_record.project }}</td>
+                <td>{{ cashout_record.cost_center }}</td>
+                <td>{{ cashout_record.service_date }}</td>
+                <td>{{ cashout_record.total_installment_amount }}</td>
+                <td>{{ cashout_record.balance_to_pay }}</td>
+                <td>
+                    <a href="{% url 'edit_cashout' cashout_record.pk %}" class="btn btn-primary">Edit</a> <!-- Add Edit button -->
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

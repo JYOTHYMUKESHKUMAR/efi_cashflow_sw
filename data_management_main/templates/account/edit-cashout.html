@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Edit CashOut</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'view_cashout' %}">Cash Out</a></li>
+                    <li class="breadcrumb-item active">Edit CashOut</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" action="{% url 'update_cashout' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="cashout_id" value="{{ cashout.id }}">
+                        <div class="form-group">
+                            <label for="expense_source">Expense Source:</label>
+                            <select class="form-control" name="expense_source" id="expense_source" required>
+                                {% for expense_source in expense_sources %}
+                                <option value="{{ expense_source.id }}" {% if cashout.expense_source.id == expense_source.id %} selected {% endif %}>{{ expense_source.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Date:</label>
+                            <input type="date" class="form-control" name="date" id="date" value="{{ cashout.date|date:'Y-m-d' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cash_out">Cash Out:</label>
+                            <input type="number" class="form-control" name="cash_out" id="cash_out" value="{{ cashout.cash_out }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status:</label>
+                            <select class="form-control" name="status" id="status" required>
+                                <option value="Paid" {% if cashout.status == 'Paid' %} selected {% endif %}>Paid</option>
+                                <option value="Scheduled" {% if cashout.status == 'Scheduled' %} selected {% endif %}>Scheduled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="remark">Remark:</label>
+                            <textarea class="form-control" name="remark" id="remark" required>{{ cashout.remark }}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="project">Project:</label>
+                            <select class="form-control" name="project" id="project" required>
+                                {% for project in projects %}
+                                <option value="{{ project.id }}" {% if cashout.project.id == project.id %} selected {% endif %}>{{ project.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cost_center">Cost Center:</label>
+                            <select class="form-control" name="cost_center" id="cost_center" required>
+                                <option value="catalyst" {% if cashout.cost_center == 'catalyst' %} selected {% endif %}>Catalyst</option>
+                                <option value="other" {% if cashout.cost_center == 'other' %} selected {% endif %}>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="service_date">Service Date:</label>
+                            <input type="date" class="form-control" name="service_date" id="service_date" value="{{ cashout.service_date|date:'Y-m-d' }}" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update CashOut</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

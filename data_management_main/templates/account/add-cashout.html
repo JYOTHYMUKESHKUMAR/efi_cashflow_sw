@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    /* CSS for blue borders and headings */
+    .blue-border {
+        border: 2px solid blue;
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+
+    .blue-heading {
+        color: #FFA500;
+        font-weight: bold;
+    }
+</style>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card blue-border">
+            <div class="card-body">
+                <form method="post" action="{% url 'add_cashout' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="col-12">
+                        <h5 class="form-title blue-heading"><span>Add CashOut</span></h5>
+                    </div>
+
+                    {% include 'messages.html' %}
+                    <br>
+                    <div id="ajax-messages"></div>
+                    <div class="col-sm-11">
+                        <label class="blue-heading">Expense Source</label>
+                        <div class="input-group">
+                            <select class="form-control" name="expense_source_id" required>
+                                <option>Select Expense Source</option>
+                                {% for i in expense_source %}
+                                <option value="{{i.id}}">{{i.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#expenseSourceModal">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label class="blue-heading">Date</label>
+                            <input type="date" class="form-control" name="date" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label class="blue-heading">Status</label>
+                            <select class="form-control" name="status" id="id_status" onchange="toggleInstallmentFields()" required>
+                                <option value="Paid">Paid</option>
+                                <option value="Scheduled">Scheduled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label class="blue-heading">Remark</label>
+                            <textarea class="form-control" name="remark" required></textarea>
+                        </div>
+                    </div>
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label class="blue-heading">Cash Out</label>
+                            <input type="number" class="form-control" name="cash_out" required>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-11">
+                        <label class="blue-heading">Project</label>
+                        <div class="input-group">
+                            <select class="form-control" name="project_id" required>
+                                <option>Select Project</option>
+                                {% for i in project %}
+                                <option value="{{i.id}}">{{i.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#projectModal">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label class="blue-heading">Cost Center</label>
+                            <select class="form-control" name="cost_center" required>
+                                <option value="catalyst">Catalyst</option>
+                                <option value="oil_and_gas">Oil and Gas</option>
+                                <option value="general_chemicals">General Chemicals</option>
+                                <option value="overhead">Overhead</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label class="blue-heading">Service Date</label>
+                            <input type="date" class="form-control" name="service_date">
+                        </div>
+                    </div>
+
+                    <!-- Installments Section -->
+                    <div id="installment-section" class="blue-border" style="display: none;">
+                        <div class="col-sm-11">
+                            <div class="form-group">
+                                <label class="blue-heading">Number of Installments (Max: 5)</label>
+                                <select class="form-control" name="num_installments" id="id_num_installments" onchange="showInstallmentFields(this.value)">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="installment-fields">
+                            <!-- Installment fields will be generated dynamically here -->
+                        </div>
+                    </div>
+
+                    <br>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Add CashOut</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Expense Source Modal -->
+<div class="modal fade" id="expenseSourceModal" tabindex="-1" role="dialog" aria-labelledby="expenseSourceModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="expenseSourceModalLabel">Add Expense Source</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label for="new_expense_source">Name:</label>
+                <input type="text" id="new_expense_source" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-expense-source">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Project Modal -->
+<div class="modal fade" id="projectModal" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="projectModalLabel">Add Project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label for="new_project">Name:</label>
+                <input type="text" id="new_project" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-project">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleInstallmentFields() {
+        var status = document.getElementById('id_status').value;
+        var installmentSection = document.getElementById('installment-section');
+
+        if (status === 'Scheduled') {
+            installmentSection.style.display = 'block';
+        } else {
+            installmentSection.style.display = 'none';
+        }
+    }
+
+    function showInstallmentFields(numInstallments) {
+        var installmentFieldsDiv = document.getElementById('installment-fields');
+        installmentFieldsDiv.innerHTML = ''; // Clear previous fields
+
+        for (var i = 1; i <= numInstallments; i++) {
+            var installmentDiv = document.createElement('div');
+            installmentDiv.classList.add('col-sm-11');
+
+            var label = document.createElement('label');
+            label.textContent = 'Installment ' + i;
+            label.classList.add('blue-heading');
+            installmentDiv.appendChild(label);
+
+            var rowDiv = document.createElement('div');
+            rowDiv.classList.add('row');
+
+            var dateDiv = document.createElement('div');
+            dateDiv.classList.add('col-sm-6');
+
+            var dateInput = document.createElement('input');
+            dateInput.setAttribute('type', 'date');
+            dateInput.setAttribute('class', 'form-control');
+            dateInput.setAttribute('name', 'installment_' + i + '_date');
+            dateInput.setAttribute('placeholder', 'Date');
+            dateDiv.appendChild(dateInput);
+            rowDiv.appendChild(dateDiv);
+
+            var amountDiv = document.createElement('div');
+            amountDiv.classList.add('col-sm-6');
+
+            var amountInput = document.createElement('input');
+            amountInput.setAttribute('type', 'number');
+            amountInput.setAttribute('class', 'form-control');
+            amountInput.setAttribute('name', 'installment_' + i + '_amount');
+            amountInput.setAttribute('placeholder', 'Amount');
+            amountDiv.appendChild(amountInput);
+            rowDiv.appendChild(amountDiv);
+
+            installmentDiv.appendChild(rowDiv);
+
+            installmentFieldsDiv.appendChild(installmentDiv);
+        }
+    }
+
+    // Call the function initially to set the visibility correctly
+    toggleInstallmentFields();
+
+    document.getElementById('save-expense-source').addEventListener('click', function() {
+        var name = document.getElementById('new_expense_source').value;
+        if (name) {
+            fetch("{% url 'add_expense_source' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ name: name })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    var newOption = document.createElement('option');
+                    newOption.value = data.id;
+                    newOption.textContent = data.name;
+                    document.querySelector('select[name="expense_source_id"]').appendChild(newOption);
+                    $('#expenseSourceModal').modal('hide');
+                    document.getElementById('ajax-messages').innerHTML = '<div class="alert alert-success">Expense Source added successfully.</div>';
+                } else {
+                    document.getElementById('ajax-messages').innerHTML = '<div class="alert alert-danger">Error adding Expense Source.</div>';
+                }
+            });
+        }
+    });
+
+    document.getElementById('save-project').addEventListener('click', function() {
+        var name = document.getElementById('new_project').value;
+        if (name) {
+            fetch("{% url 'add_project' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ name: name })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    var newOption = document.createElement('option');
+                    newOption.value = data.id;
+                    newOption.textContent = data.name;
+                    document.querySelector('select[name="project_id"]').appendChild(newOption);
+                    $('#projectModal').modal('hide');
+                    document.getElementById('ajax-messages').innerHTML = '<div class="alert alert-success">Project added successfully.</div>';
+                } else {
+                    document.getElementById('ajax-messages').innerHTML = '<div class="alert alert-danger">Error adding Project.</div>';
+                }
+            });
+        }
+    });
+</script>
+
+{% endblock %}

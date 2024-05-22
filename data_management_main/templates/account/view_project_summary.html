@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+{% load static %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left Column: Project Report Table -->
+        <div class="col-lg-9">
+            <div class="card mt-4" style="border: 2px solid #87CEEB;">
+                <div class="card-header text-center" style="background-color: #2F4F4F; color: white;">
+                    <h2>PROJECT REPORT</h2>
+                </div>
+                <table id="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Total Cash In</th>
+                            <th>Total Cash Out</th>
+                            <th>Balance</th>
+                            <th>Start Inventory</th>
+                            <th>End Inventory</th>
+                            <th>Actual Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ total_cash_in|floatformat:2 }}</td>
+                            <td>{{ total_cash_out|floatformat:2 }}</td>
+                            <td>{{ balance|floatformat:2 }}</td>
+                            <td>{{ start_inventory|floatformat:2 }}</td>
+                            <td>{{ end_inventory|floatformat:2 }}</td>
+                            <td>{{ actual_balance|floatformat:2 }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Project Summary Table -->
+                <table id="project-summary-table" class="mt-4">
+                    <caption>Project Summary</caption>
+                    <thead>
+                        <tr style="background-color: #FFA07A;">
+                            <th>Date</th>
+                            <th>Project</th>
+                            <th>Cash In</th>
+                            <th>Cash Out</th>
+                            <th>Balance</th>
+                            <th>Service Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for summary in project_summaries %}
+                        <tr>
+                            <td>{{ summary.date }}</td>
+                            <td>{{ summary.project }}</td>
+                            <td>{{ summary.cash_in|floatformat:2 }}</td>
+                            <td>{{ summary.cash_out|floatformat:2 }}</td>
+                            <td>{{ summary.balance|floatformat:2 }}</td>
+                            <td>{{ summary.service_date }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+           
+
+        <!-- Right Column: Filters and Inventory Form -->
+        <div class="col-lg-3">
+             <!-- Export Button -->
+             <form action="{% url 'export_project_summary' %}" method="get" class="mt-4">
+                <button type="submit" class="btn btn-success btn-block">Export Project Summary</button>
+            </form>
+            <!-- Filters Form -->
+            <div class="card mt-4" style="border: 2px solid #87CEEB;">
+                <div class="card-header text-center" style="background-color: #2F4F4F; color: white;">
+                    <h2>Filters</h2>
+                </div>
+                <div class="card-body" style="background-color: #87CEEB;">
+                    <form method="GET">
+                        <div class="form-group">
+                            <label for="start_date">Start Date:</label>
+                            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="end_date">End Date:</label>
+                            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="project">Project:</label>
+                            <select name="project" id="project" class="form-control">
+                                <option value="" {% if not selected_project %} selected {% endif %}>All Projects</option>
+                                {% for project_name in project_names %}
+                                    <option value="{{ project_name }}" {% if selected_project == project_name %} selected {% endif %}>{{ project_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="{% url 'view_project_summary' %}" class="btn btn-secondary">Clear Filter</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Inventory Form -->
+            <div class="card mt-4" style="border: 2px solid #87CEEB;">
+                <div class="card-header text-center" style="background-color: #2F4F4F; color: white;">
+                    <h2>Inventory Input</h2>
+                </div>
+                <div class="card-body" style="background-color: #87CEEB;">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="start_inventory">Start Inventory:</label>
+                            <input type="text" id="start_inventory" name="start_inventory" value="{{ start_inventory }}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="end_inventory">End Inventory:</label>
+                            <input type="text" id="end_inventory" name="end_inventory" value="{{ end_inventory }}" class="form-control">
+                        </div>
+                        <input type="submit" value="Submit" class="btn btn-primary mt-3">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

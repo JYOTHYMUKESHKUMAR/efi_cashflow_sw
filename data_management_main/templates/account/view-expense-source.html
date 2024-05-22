@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Supplier Database</h3>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#expenseSourceModal">Add Expense Source</button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="card mt-4" style="border: 2px solid #87CEEB;">
+                <div class="card-header text-center" style="background-color: #2F4F4F; color: white;">
+                    <h2>Expense Sources List</h2>
+                </div>
+                <div class="card-body">
+                    <div id="alert-container"></div> <!-- Container for the success message -->
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr style="background-color: #FFA07A;">
+                                    <th scope="col">No</th>
+                                    <th scope="col">Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expense-source-list">
+                                {% for expense_source in expense_sources %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ expense_source.name }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="2">No expense sources available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="card mt-4" style="border: 2px solid #87CEEB;">
+                <div class="card-header text-center" style="background-color: #2F4F4F; color: white;">
+                    <h2>Add Expense Source</h2>
+                </div>
+                <div class="card-body" style="background-color: #87CEEB;">
+                    <form id="expense-source-form">
+                        <div class="form-group">
+                            <label for="new_expense_source">Name:</label>
+                            <input type="text" id="new_expense_source" class="form-control">
+                        </div>
+                        <button type="button" class="btn btn-primary btn-block" id="save-expense-source">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Expense Source Modal -->
+<div class="modal fade" id="expenseSourceModal" tabindex="-1" role="dialog" aria-labelledby="expenseSourceModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="expenseSourceModalLabel">Add Expense Source</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label for="new_expense_source_modal">Name:</label>
+                <input type="text" id="new_expense_source_modal" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-expense-source-modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('save-expense-source').addEventListener('click', function() {
+    const name = document.getElementById('new_expense_source').value;
+    fetch("{% url 'add_expense_source' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({name: name})
+    }).then(response => response.json()).then(data => {
+        const alertContainer = document.getElementById('alert-container');
+        if (data.success) {
+            const newRow = `<tr><td>#</td><td>${data.name}</td></tr>`;
+            document.getElementById('expense-source-list').insertAdjacentHTML('beforeend', newRow);
+            document.getElementById('new_expense_source').value = '';
+            alertContainer.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Expense source added successfully.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            `;
+        } else {
+            alertContainer.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    ${data.message}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            `;
+        }
+    });
+});
+
+document.getElementById('save-expense-source-modal').addEventListener('click', function() {
+    const name = document.getElementById('new_expense_source_modal').value;
+    fetch("{% url 'add_expense_source' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({name: name})
+    }).then(response => response.json()).then(data => {
+        const alertContainer = document.getElementById('alert-container');
+        if (data.success) {
+            const newRow = `<tr><td>#</td><td>${data.name}</td></tr>`;
+            document.getElementById('expense-source-list').insertAdjacentHTML('beforeend', newRow);
+            document.getElementById('new_expense_source_modal').value = '';
+            $('#expenseSourceModal').modal('hide');
+            alertContainer.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Expense source added successfully.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            `;
+        } else {
+            alertContainer.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    ${data.message}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            `;
+        }
+    });
+});
+</script>
+
+{% endblock %}
